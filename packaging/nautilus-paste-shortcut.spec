@@ -31,11 +31,14 @@ dialogs for invalid clipboard cases.
 mkdir -p %{buildroot}%{_datadir}/nautilus-python/extensions
 install -m 0644 src/nautilus_paste_shortcut.py \
     %{buildroot}%{_datadir}/nautilus-python/extensions/nautilus_paste_shortcut.py
+install -m 0644 src/core_logic.py \
+    %{buildroot}%{_datadir}/nautilus-python/extensions/core_logic.py
 
 %files
 %license LICENSE
 %doc README.md
 %{_datadir}/nautilus-python/extensions/nautilus_paste_shortcut.py
+%{_datadir}/nautilus-python/extensions/core_logic.py
 
 %changelog
 * Thu Jul 09 2026 Iman <iman@example.com> 0.1.0-1

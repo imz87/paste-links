@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 
-import os
-
 import gi
 
 gi.require_version("Gdk", "4.0")
 gi.require_version("Gtk", "4.0")
 gi.require_version("Nautilus", "4.0")
 
-from gi.repository import Gdk, Gio, GLib, GObject, Gtk, Nautilus
+from gi.repository import Gdk, GLib, GObject, Gtk, Nautilus
+
+from core_logic import (
+    PasteShortcutError,
+    local_path_from_uri,
+    paste_shortcuts,
+)
 
 
 TARGET_MIME_TYPE = "x-special/gnome-copied-files"
@@ -22,7 +26,7 @@ class PasteShortcutExtension(GObject.GObject, Nautilus.MenuProvider):
             return []
 
         folder_uri = current_folder.get_uri()
-        if not self._local_path_from_uri(folder_uri):
+        if not local_path_from_uri(folder_uri):
             return []
 
         item = Nautilus.MenuItem(
@@ -71,80 +75,13 @@ class PasteShortcutExtension(GObject.GObject, Nautilus.MenuProvider):
             return
 
         try:
-            message = self._paste_shortcuts(payload, destination_uri)
+            message = paste_shortcuts(payload, destination_uri)
         except PasteShortcutError as error:
             self._show_error(str(error))
             return
 
         if message:
             self._show_error(message)
-
-    def _paste_shortcuts(self, payload, destination_uri):
-        operation, source_uris = self._parse_payload(payload)
-        if operation != "copy":
-            raise PasteShortcutError("Clipboard contains cut items. Copy files with Ctrl+C first.")
-
-        destination_path = self._local_path_from_uri(destination_uri)
-        if not destination_path or not os.path.isdir(destination_path):
-            raise PasteShortcutError("Shortcuts can only be pasted into a local folder.")
-
-        local_sources = []
-        skipped = []
-
-        for uri in source_uris:
-            local_path = self._local_path_from_uri(uri)
-            if local_path is None:
-                skipped.append(f"Unsupported source: {uri}")
-                continue
-            local_sources.append(local_path)
-
-        if not local_sources:
-            raise PasteShortcutError("Clipboard does not contain any supported local files or folders.")
-
-        failures = []
-        for source_path in local_sources:
-            try:
-                self._create_shortcut(source_path, destination_path)
-            except OSError as error:
-                failures.append(f"{os.path.basename(source_path)}: {error}")
-
-        if failures and skipped:
-            return self._join_lines(["Some shortcuts were not created.", *failures, *skipped])
-        if failures:
-            return self._join_lines(["Some shortcuts were not created.", *failures])
-        if skipped:
-            return self._join_lines(["Some items were skipped.", *skipped])
-        return None
-
-    def _create_shortcut(self, source_path, destination_dir):
-        link_name = self._available_link_name(os.path.basename(source_path), destination_dir)
-        link_path = os.path.join(destination_dir, link_name)
-        os.symlink(source_path, link_path)
-
-    def _available_link_name(self, base_name, destination_dir):
-        candidate = base_name
-        index = 0
-        while os.path.lexists(os.path.join(destination_dir, candidate)):
-            index += 1
-            candidate = self._link_variant(base_name, index)
-        return candidate
-
-    def _link_variant(self, base_name, index):
-        root, extension = os.path.splitext(base_name)
-        suffix = "-link" if index == 1 else f"-link-{index}"
-        if not root:
-            return f"{base_name}{suffix}"
-        return f"{root}{suffix}{extension}"
-
-    def _parse_payload(self, payload):
-        lines = [line.strip() for line in payload.splitlines() if line.strip()]
-        if not lines:
-            raise PasteShortcutError("Clipboard is empty.")
-        return lines[0], lines[1:]
-
-    def _local_path_from_uri(self, uri):
-        file_obj = Gio.File.new_for_uri(uri)
-        return file_obj.get_path()
 
     def _read_stream(self, stream):
         try:
@@ -175,10 +112,3 @@ class PasteShortcutExtension(GObject.GObject, Nautilus.MenuProvider):
         dialog.set_title(DIALOG_TITLE)
         dialog.connect("response", lambda current_dialog, _response_id: current_dialog.destroy())
         dialog.present()
-
-    def _join_lines(self, lines):
-        return "\n".join(line for line in lines if line)
-
-
-class PasteShortcutError(RuntimeError):
-    pass

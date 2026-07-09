@@ -43,7 +43,7 @@ From this repository:
 ./install.sh
 ```
 
-The script installs the extension into:
+The script installs the extension files into:
 
 ```text
 ~/.local/share/nautilus-python/extensions/
@@ -77,10 +77,10 @@ rpmbuild -ba packaging/nautilus-paste-shortcut.spec
 sudo dnf install ~/rpmbuild/RPMS/noarch/nautilus-paste-shortcut-0.1.0-1.*.rpm
 ```
 
-The RPM installs the extension to the system-wide path:
+The RPM installs the extension files to the system-wide path:
 
 ```text
-/usr/share/nautilus-python/extensions/nautilus_paste_shortcut.py
+/usr/share/nautilus-python/extensions/
 ```
 
 After installation, restart Nautilus:
@@ -117,16 +117,19 @@ If the clipboard does not contain copied local files, the menu item is hidden. A
 
 ## Uninstall
 
-Remove the installed extension file and restart Nautilus:
+Remove the installed extension files and restart Nautilus:
 
 ```bash
-rm ~/.local/share/nautilus-python/extensions/nautilus_paste_shortcut.py
+rm ~/.local/share/nautilus-python/extensions/nautilus_paste_shortcut.py \
+   ~/.local/share/nautilus-python/extensions/core_logic.py
 nautilus -q
 ```
 
 ## Development
 
-- Source file: `src/nautilus_paste_shortcut.py`
+- Source files:
+  - `src/nautilus_paste_shortcut.py` - Nautilus/GTK integration entrypoint
+  - `src/core_logic.py` - Pure shortcut logic (testable without GTK/GDK/Nautilus)
 - Installer: `install.sh`
 - RPM packaging: `packaging/nautilus-paste-shortcut.spec`
 - Project docs: `.docs/`
