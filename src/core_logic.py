@@ -161,3 +161,44 @@ def join_lines(lines):
         Single string with lines separated by newlines.
     """
     return "\n".join(line for line in lines if line)
+
+
+def normalize_clipboard_text(payload):
+    """Normalize clipboard text into the copy payload format.
+
+    On some Nautilus/Wayland setups, Gdk.Clipboard.read_text_async()
+    returns plain local paths instead of the old x-special/gnome-copied-files
+    payload. This function converts plain paths into the expected format:
+    ``copy\\nfile:///path/to/file``.
+
+    If the payload already starts with an operation marker (``copy`` or
+    ``cut``), it is returned unchanged.
+
+    Args:
+        payload: Raw clipboard text from read_text_async().
+
+    Returns:
+        Normalized payload string.
+    """
+    lines = [line.strip() for line in payload.splitlines() if line.strip()]
+    if not lines:
+        return payload
+
+    # Older Nautilus clipboard data starts with an operation marker:
+    # "copy" or "cut" followed by file:// URIs. Keep that shape intact.
+    if lines[0] in {"copy", "cut"}:
+        return "\n".join(lines)
+
+    # Convert plain local paths to the copy payload format.
+    uris = []
+    for line in lines:
+        if line.startswith("file://"):
+            if local_path_from_uri(line):
+                uris.append(line)
+        elif os.path.lexists(line):
+            uris.append(Gio.File.new_for_path(line).get_uri())
+
+    if not uris:
+        return payload
+
+    return "\n".join(["copy", *uris])

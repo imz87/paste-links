@@ -65,9 +65,11 @@ nautilus -q
 ### Package Dependencies
 
 - `python3-nautilus` - Nautilus Python bindings
-- `nautilus-python` - Nautilus Python extension loader
+- `nautilus-python` - Nautilus Python extension loader (provides `libnautilus-python.so`)
 - `python3-gobject` - Python GObject introspection bindings
 - `gtk4` - GTK4 toolkit
+
+**Important:** `nautilus-python` is the extension loader, not just Python bindings. Without it, Nautilus silently ignores `.py` files in the extensions directory. The `install.sh` script checks for this before copying files.
 
 ### COPR Distribution
 
@@ -77,6 +79,12 @@ COPR packages can be built from the same spec file. To publish to COPR:
 2. Add a new project
 3. Upload the spec file and source tarball
 4. Enable builds for desired Fedora releases
+
+## Cross-Distro Support
+
+The local installer (`install.sh`) works on any Linux distribution with a compatible Nautilus 4 desktop. The installer checks for the Nautilus Python extension loader before copying files.
+
+Package names vary by distribution. The `nautilus-python` package (or equivalent) must provide `libnautilus-python.so`. See `README.md` for distro-specific install commands.
 
 ## Non-Goals
 

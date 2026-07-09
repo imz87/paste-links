@@ -18,6 +18,7 @@ from core_logic import (
     create_shortcut,
     join_lines,
     link_variant,
+    normalize_clipboard_text,
     parse_payload,
     paste_shortcuts,
 )
@@ -271,6 +272,66 @@ class TestPasteShortcuts:
         paste_shortcuts(payload, f"file://{dest}")
 
         assert (dest / "test-link.txt").is_symlink()
+
+
+# ---------------------------------------------------------------------------
+# normalize_clipboard_text
+# ---------------------------------------------------------------------------
+
+
+class TestNormalizeClipboardText:
+    def test_copy_payload_unchanged(self):
+        payload = "copy\nfile:///tmp/test.txt"
+        assert normalize_clipboard_text(payload) == payload
+
+    def test_cut_payload_unchanged(self):
+        payload = "cut\nfile:///tmp/test.txt"
+        assert normalize_clipboard_text(payload) == payload
+
+    def test_copy_with_multiple_uris_unchanged(self):
+        payload = "copy\nfile:///tmp/a.txt\nfile:///tmp/b.txt"
+        assert normalize_clipboard_text(payload) == payload
+
+    def test_single_plain_path(self, tmp_path):
+        src = tmp_path / "file.txt"
+        src.touch()
+        payload = str(src)
+        result = normalize_clipboard_text(payload)
+        assert result.startswith("copy\n")
+        assert f"file://{src}" in result
+
+    def test_multiple_plain_paths(self, tmp_path):
+        a = tmp_path / "a.txt"
+        b = tmp_path / "b.txt"
+        a.touch()
+        b.touch()
+        payload = f"{a}\n{b}"
+        result = normalize_clipboard_text(payload)
+        assert result.startswith("copy\n")
+        assert f"file://{a}" in result
+        assert f"file://{b}" in result
+
+    def test_file_uri_line_unchanged(self):
+        payload = "file:///tmp/test.txt"
+        result = normalize_clipboard_text(payload)
+        assert result.startswith("copy\n")
+        assert "file:///tmp/test.txt" in result
+
+    def test_empty_payload(self):
+        assert normalize_clipboard_text("") == ""
+
+    def test_whitespace_only(self):
+        assert normalize_clipboard_text("   \n  \n  ") == "   \n  \n  "
+
+    def test_non_file_text_fallback(self):
+        payload = "some random clipboard text"
+        result = normalize_clipboard_text(payload)
+        assert result == payload
+
+    def test_nonexistent_path_fallback(self):
+        payload = "/home/user/documents/file.txt"
+        result = normalize_clipboard_text(payload)
+        assert result == payload
 
 
 # ---------------------------------------------------------------------------

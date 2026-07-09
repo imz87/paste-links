@@ -8,11 +8,12 @@ gi.require_version("Gdk", "4.0")
 gi.require_version("Gtk", "4.0")
 gi.require_version("Nautilus", "4.0")
 
-from gi.repository import Gdk, Gio, GLib, GObject, Gtk, Nautilus
+from gi.repository import Gdk, GLib, GObject, Gtk, Nautilus
 
 from core_logic import (
     PasteShortcutError,
     local_path_from_uri,
+    normalize_clipboard_text,
     paste_shortcuts,
 )
 
@@ -93,7 +94,7 @@ class PasteShortcutExtension(GObject.GObject, Nautilus.MenuProvider):
             self._show_error("Clipboard is empty.")
             return
 
-        payload = self._normalize_clipboard_text(payload)
+        payload = normalize_clipboard_text(payload)
 
         try:
             message = paste_shortcuts(payload, destination_uri)
@@ -107,35 +108,6 @@ class PasteShortcutExtension(GObject.GObject, Nautilus.MenuProvider):
 
         if message:
             self._show_error(message)
-
-    def _normalize_clipboard_text(self, payload):
-        lines = [line.strip() for line in payload.splitlines() if line.strip()]
-        if not lines:
-            return payload
-
-        # Older Nautilus clipboard data starts with an operation marker:
-        # "copy" or "cut" followed by file:// URIs. Keep that shape intact.
-        if lines[0] in {"copy", "cut"}:
-            return "\n".join(lines)
-
-        # On this Fedora/Nautilus/Wayland setup, read_text_async() returns
-        # plain local paths instead of the old x-special/gnome-copied-files
-        # text payload. Treat those paths as copied items and convert them to
-        # the payload shape used by the pure shortcut logic.
-        uris = []
-        for line in lines:
-            uri = (
-                line
-                if line.startswith("file://")
-                else Gio.File.new_for_path(line).get_uri()
-            )
-            if local_path_from_uri(uri):
-                uris.append(uri)
-
-        if not uris:
-            return payload
-
-        return "\n".join(["copy", *uris])
 
     def _show_error(self, message, detail=None):
         if hasattr(Gtk, "AlertDialog"):

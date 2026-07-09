@@ -25,13 +25,35 @@ The extension reads Nautilus's copied-files clipboard payload after a normal `Ct
 
 ## Dependencies
 
-Fedora packages:
+This extension requires a Nautilus 4 desktop with GTK 4, PyGObject, and the **Nautilus Python extension loader** (`nautilus-python`). The loader is the package that tells Nautilus how to load `.py` files from the extensions directory. Without it, installed extension files are silently ignored.
+
+### Fedora
 
 ```bash
 sudo dnf install python3-nautilus nautilus-python python3-gobject gtk4
 ```
 
-Package names may vary slightly by Fedora release. `python3-nautilus` is the important one.
+### Ubuntu / Debian
+
+```bash
+sudo apt install python3-nautilus gir1.2-nautilus-4.0 python3-gi gir1.2-gtk-4.0
+```
+
+Package names may vary by Ubuntu/Debian release. Check that `libnautilus-python.so` is available on your system.
+
+### Arch Linux / Manjaro
+
+```bash
+sudo pacman -S nautilus python-gobject gtk4
+```
+
+### openSUSE
+
+```bash
+sudo zypper install nautilus-python python3-gobject gtk4
+```
+
+Support on non-Fedora distributions is conditional and depends on having compatible Nautilus 4, GTK 4, PyGObject, and a working Nautilus Python extension loader. Package names and availability may differ.
 
 ## Install
 
@@ -158,6 +180,32 @@ The tests do **not** require a live GNOME session, Nautilus, or clipboard access
 4. Repeat with a conflicting destination name and verify `-link` suffixes are used.
 5. Press `Ctrl+X` instead of `Ctrl+C` and verify the menu item is hidden.
 6. Copy plain text from another app and verify the menu item is hidden.
+
+## Troubleshooting
+
+### Menu item does not appear
+
+If the extension files are installed but `Paste Shortcut Here` does not appear in the context menu:
+
+1. **Check the loader is installed.** The `nautilus-python` package provides the shared library that lets Nautilus load Python extensions. Run:
+   ```bash
+   find /usr/lib* /usr/share -name "libnautilus-python.so" 2>/dev/null
+   ```
+   If nothing is found, install the loader package for your distro (see [Dependencies](#dependencies)).
+
+2. **Restart Nautilus.** After installing the extension or its dependencies:
+   ```bash
+   nautilus -q
+   ```
+   Then open GNOME Files again.
+
+3. **Check you are right-clicking empty space.** The menu item only appears when you right-click the folder background, not when you right-click a file.
+
+4. **Check the clipboard.** The menu item is hidden when the clipboard does not contain copied files. Select a file in Nautilus, press `Ctrl+C`, then try again.
+
+### Nautilus crashes on paste
+
+On some Nautilus/Wayland setups, the native clipboard transfer API can crash. This extension uses a text-based clipboard read path to avoid that issue. If you still see crashes, check the terminal output for error messages and open an issue.
 
 ## License
 
