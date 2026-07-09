@@ -4,7 +4,7 @@ Add package signing support for release artifacts before native package reposito
 
 # Background
 
-Task 008 plans unsigned GitHub Release artifacts for RPM, DEB, Arch, and openSUSE packaging. Task 009 plans native PPA/apt repository publishing, and package signing must be completed before that publishing workflow can go live.
+Task 008 plans unsigned GitHub Release artifacts for RPM, DEB, Arch, and openSUSE packaging. Native PPA/apt repository publishing should not go live until package signing is implemented and documented.
 
 This task establishes signing for package artifacts and documents how signing keys are managed safely in GitHub Actions.
 
@@ -92,6 +92,5 @@ Decisions for this task:
 
 # Questions
 
-- Which signing key identity should be used for the project?
 - Resolved: use initial signing identity `Nautilus Paste Shortcut Release Signing <zolfaghari19@gmail.com>`.
 - Resolved: signing should be performed in GitHub Actions only; local maintainer signing is out of scope for the initial implementation.

@@ -4,7 +4,7 @@ Add native PPA/apt repository publishing workflows after GitHub Release artifact
 
 # Background
 
-Task 008 adds cross-distro packaging assets and GitHub Actions release artifacts for RPM, DEB, Arch, and openSUSE targets. GitHub Release artifacts are useful downloadable packages, but they are not the same as native package repositories that users can add once and update through `apt`.
+Task 008 adds cross-distro packaging assets and GitHub Actions release artifacts for RPM, DEB, Arch, and openSUSE targets. Task 009 adds package signing support. GitHub Release artifacts are useful downloadable packages, but they are not the same as native package repositories that users can add once and update through `apt`.
 
 This task plans the next distribution step: publishing to a native Debian/Ubuntu repository, with PPA/apt as the first target. It should start only after package metadata, release artifact generation, and package signing are stable.
 
@@ -57,7 +57,7 @@ Decisions for this task:
 # Implementation Steps
 
 1. Confirm that task 008 is complete and package artifacts build successfully for all selected distro families.
-2. Confirm package signing support exists and is documented. If it is not complete, block this task until the package-signing task is done.
+2. Confirm package signing support from task 009 exists and is documented. If it is not complete, block this task until task 009 is done.
 3. Implement PPA/apt publishing as the first native repository target.
 4. Document required accounts, credentials, tokens, signing keys, and manual setup steps for the PPA/apt target.
 5. Add publishing workflow steps with manual triggers and appropriate release/tag constraints.
@@ -71,7 +71,7 @@ Decisions for this task:
 # Acceptance Criteria
 
 - [ ] Native PPA/apt repository publishing is implemented as the first external repository target.
-- [ ] Package signing is completed and integrated before any live PPA/apt publication is enabled.
+- [ ] Package signing from task 009 is completed and integrated before any live PPA/apt publication is enabled.
 - [ ] Publishing workflows use documented GitHub Actions secrets or protected environments and do not hard-code credentials.
 - [ ] Publishing workflows require GitHub Environment approval before pushing to external repositories.
 - [ ] Real publication requires an explicit tag/manual trigger and is not run on ordinary pull requests.
