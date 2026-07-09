@@ -19,11 +19,49 @@ on:
         required: false
         default: 'noble'
         type: string
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
 
 jobs:
+  auto-tag:
+    name: Auto-tag on VERSION change
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if VERSION changed
+        id: version
+        run: |
+          if git diff --name-only HEAD~1 HEAD | grep -q "^VERSION$"; then
+            VERSION=$(cat VERSION | tr -d '[:space:]')
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+            echo "VERSION changed to $VERSION"
+          else
+            echo "VERSION unchanged, skipping tag"
+          fi
+
+      - name: Create and push tag
+        if: steps.version.outputs.version
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "Creating tag v${VERSION}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${VERSION}"
+          git push origin "v${VERSION}"
+          echo "Tag v${VERSION} created — release workflow will run"
+
   validate:
     name: Validate version
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_run'
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
