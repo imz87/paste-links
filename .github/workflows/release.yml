@@ -22,6 +22,7 @@ on:
   workflow_run:
     workflows: ["CI"]
     types: [completed]
+    branches: [main, master, fix/ci-auto-tag]
 
 jobs:
   auto-tag:
