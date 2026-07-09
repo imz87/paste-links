@@ -5,6 +5,20 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Perform dry run without publishing'
+        required: false
+        default: 'true'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+      target_series:
+        description: 'Ubuntu series to publish to (e.g., noble, jammy)'
+        required: false
+        default: 'noble'
+        type: string
 
 jobs:
   validate:
@@ -89,9 +103,43 @@ jobs:
           name: rpm-fedora
           path: ~/rpmbuild/RPMS/noarch/nautilus-paste-shortcut-*.rpm
 
+  build-source-package:
+    name: Build source package (Ubuntu)
+    needs: [validate, source-tarball]
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y devscripts debhelper fakeroot
+
+      - name: Build source package
+        run: |
+          VERSION="${{ needs.validate.outputs.version }}"
+          cp -r packaging/debian debian
+          sed -i "1s/(0.1.0-1)/(${VERSION}-1)/" debian/changelog
+          dpkg-buildpackage -us -uc -S
+          # Move build artifacts to workspace root for upload
+          mv ../*.changes ../*.dsc ../*.debian.tar.* ../*.orig.tar.* . 2>/dev/null || true
+
+      - name: Upload source package
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-package
+          path: |
+            *.changes
+            *.dsc
+            *.debian.tar.*
+            *.orig.tar.*
+
   sign-artifacts:
     name: Sign release artifacts
-    needs: [validate, source-tarball, build-rpm-fedora]
+    needs: [validate, source-tarball, build-rpm-fedora, build-source-package]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     permissions:
@@ -117,6 +165,10 @@ jobs:
         run: |
           find artifacts/rpm-fedora -name "*.rpm" -exec gpg --batch --yes --detach-sign {} \;
 
+      - name: Sign Ubuntu source package
+        run: |
+          find artifacts/source-package -name "*.changes" -exec gpg --batch --yes --detach-sign {} \;
+
       - name: Upload signed artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -124,6 +176,7 @@ jobs:
           path: |
             artifacts/source-tarball/
             artifacts/rpm-fedora/
+            artifacts/source-package/
           if-no-files-found: error
 
   release:
@@ -150,3 +203,70 @@ jobs:
             artifacts/source-tarball/*
             artifacts/rpm-fedora/*
           generate_release_notes: true
+
+  publish-ppa:
+    name: Publish to PPA
+    needs: [validate, sign-artifacts, build-source-package]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    environment: ppa-publish
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download source package
+        uses: actions/download-artifact@v4
+        with:
+          name: source-package
+
+      - name: Import GPG key
+        id: import-gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Install dput
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dput
+
+      - name: Configure dput
+        run: |
+          cat > ~/.dput.cf << 'EOF'
+          [ppa]
+          login = ${{ secrets.PPA_LAUNCHPAD_USERNAME }}
+          method = ftp
+          host = ppa.launchpad.net
+          incoming = ~${{ secrets.PPA_LAUNCHPAD_USERNAME }}/ppa/ubuntu
+          EOF
+
+      - name: Dry run (if enabled)
+        if: inputs.dry_run == 'true'
+        run: |
+          echo "=== DRY RUN MODE ==="
+          echo "Would publish to PPA: ${{ secrets.PPA_LAUNCHPAD_USERNAME }}/ppa"
+          echo "Target series: ${{ inputs.target_series || 'noble' }}"
+          echo "Files to upload:"
+          ls -la *.changes *.dsc 2>/dev/null || echo "No source package files found"
+          echo ""
+          echo "=== DRY RUN COMPLETE ==="
+
+      - name: Publish to PPA (if not dry run)
+        if: inputs.dry_run != 'true'
+        run: |
+          SERIES="${{ inputs.target_series || 'noble' }}"
+          echo "Publishing to PPA for series: $SERIES"
+          dput ppa nautilus-paste-shortcut_*.changes
+
+      - name: Verify publication
+        if: inputs.dry_run != 'true'
+        run: |
+          echo "=== Publication Status ==="
+          echo "Package published to PPA: ${{ secrets.PPA_LAUNCHPAD_USERNAME }}/ppa"
+          echo "Users can now install with:"
+          echo "  sudo add-apt-repository ppa:${{ secrets.PPA_LAUNCHPAD_USERNAME }}/ppa"
+          echo "  sudo apt update"
+          echo "  sudo apt install nautilus-paste-shortcut"
