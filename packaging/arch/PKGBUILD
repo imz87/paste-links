@@ -7,7 +7,7 @@ arch=('any')
 url="https://github.com/imz87/nautilus-paste-shortcut"
 license=('MIT')
 depends=('nautilus' 'python-gobject' 'gtk4' 'python-nautilus')
-source=("$pkgname-$pkgver.tar.gz::https://github.com/imz87/$pkgname/archive/v$pkgver.tar.gz")
+source=("$pkgname-$pkgver.tar.gz")
 sha256sums=('SKIP')
 
 package() {
