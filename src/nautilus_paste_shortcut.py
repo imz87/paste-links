@@ -21,12 +21,16 @@ class PasteShortcutExtension(GObject.GObject, Nautilus.MenuProvider):
         if not self._clipboard_has_copied_files():
             return []
 
+        folder_uri = current_folder.get_uri()
+        if not self._local_path_from_uri(folder_uri):
+            return []
+
         item = Nautilus.MenuItem(
             name="PasteShortcutExtension::PasteShortcutHere",
             label=MENU_LABEL,
             tip="Create symbolic links from copied files",
         )
-        item.connect("activate", self._on_activate, current_folder.get_uri())
+        item.connect("activate", self._on_activate, folder_uri)
         return [item]
 
     def _clipboard_has_copied_files(self):
@@ -144,8 +148,13 @@ class PasteShortcutExtension(GObject.GObject, Nautilus.MenuProvider):
 
     def _read_stream(self, stream):
         try:
-            payload = stream.read_bytes(1024 * 1024, None)
-            return payload.get_data().decode("utf-8", errors="replace")
+            chunks = []
+            while True:
+                chunk = stream.read_bytes(64 * 1024, None)
+                if chunk.get_size() == 0:
+                    break
+                chunks.append(chunk.get_data())
+            return b"".join(chunks).decode("utf-8", errors="replace")
         finally:
             stream.close(None)
 
