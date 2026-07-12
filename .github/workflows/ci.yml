@@ -607,23 +607,32 @@ jobs:
           OBS_PASSWORD: ${{ secrets.OPENSUSE_OBS_PASSWORD }}
         run: |
           mkdir -p "${HOME}/.config/osc"
-          cat > "${HOME}/.config/osc/oscrc" <<EOF
-          [general]
-          apiurl = https://build.opensuse.org
-
-          [https://build.opensuse.org]
-          user = ${OBS_USERNAME}
-          pass = ${OBS_PASSWORD}
-          credentials_manager_class = osc.credentialsmgrmodule.CredentialsManager
-          EOF
-          sed -i 's/^          //' "${HOME}/.config/osc/oscrc"
+          printf '%s\n' \
+            "[general]" \
+            "apiurl = https://build.opensuse.org" \
+            "" \
+            "[https://build.opensuse.org]" \
+            "user = ${OBS_USERNAME}" \
+            "pass = ${OBS_PASSWORD}" \
+            > "${HOME}/.config/osc/oscrc"
           chmod 600 "${HOME}/.config/osc/oscrc"
+          echo "oscrc written for user: ${OBS_USERNAME}"
 
       - name: Create source tarball
         run: |
           VERSION="${{ needs.prepare-release.outputs.version }}"
           git archive --format=tar.gz --prefix="nautilus-paste-shortcut-${VERSION}/" \
               HEAD -o "nautilus-paste-shortcut-${VERSION}.tar.gz"
+
+      - name: Test OBS connection
+        if: github.event_name != 'workflow_dispatch' || inputs.dry_run != 'true'
+        run: |
+          osc -A https://build.opensuse.org whoami || {
+            echo "::error::OBS authentication failed."
+            echo "Check that OPENSUSE_OBS_USERNAME and OPENSUSE_OBS_PASSWORD are correct."
+            exit 1
+          }
+          echo "OBS authentication successful"
 
       - name: Submit to OBS
         if: github.event_name != 'workflow_dispatch' || inputs.dry_run != 'true'
