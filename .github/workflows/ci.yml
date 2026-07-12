@@ -606,17 +606,18 @@ jobs:
           OBS_USERNAME: ${{ secrets.OPENSUSE_OBS_USERNAME }}
           OBS_PASSWORD: ${{ secrets.OPENSUSE_OBS_PASSWORD }}
         run: |
-          mkdir -p "${HOME}/.config/osc"
+          OSC_CONFIG="${RUNNER_TEMP}/oscrc"
           printf '%s\n' \
             "[general]" \
-            "apiurl = https://build.opensuse.org" \
+            "apiurl = https://api.opensuse.org" \
             "" \
-            "[https://build.opensuse.org]" \
+            "[https://api.opensuse.org]" \
             "user = ${OBS_USERNAME}" \
             "pass = ${OBS_PASSWORD}" \
-            > "${HOME}/.config/osc/oscrc"
-          chmod 600 "${HOME}/.config/osc/oscrc"
-          echo "oscrc written for user: ${OBS_USERNAME}"
+            > "${OSC_CONFIG}"
+          chmod 600 "${OSC_CONFIG}"
+          echo "OSC_CONFIG=${OSC_CONFIG}" >> "${GITHUB_ENV}"
+          echo "osc config written for user: ${OBS_USERNAME}"
 
       - name: Create source tarball
         run: |
@@ -627,7 +628,10 @@ jobs:
       - name: Test OBS connection
         if: github.event_name != 'workflow_dispatch' || inputs.dry_run != 'true'
         run: |
-          osc -A https://build.opensuse.org ls home:imz87:nautilus-paste-shortcut || {
+          osc --version
+          echo "HOME=${HOME}"
+          ls -la "${OSC_CONFIG}"
+          osc --config "${OSC_CONFIG}" -A https://api.opensuse.org ls home:imz87:nautilus-paste-shortcut || {
             echo "::error::OBS authentication failed."
             echo "Check that OPENSUSE_OBS_USERNAME and OPENSUSE_OBS_PASSWORD are correct."
             exit 1
@@ -647,7 +651,8 @@ jobs:
           mkdir -p "${WORK_DIR}"
           cd "${WORK_DIR}"
 
-          osc -A https://build.opensuse.org checkout "${OBS_PROJECT}" "${OBS_PACKAGE}"
+          osc --config "${OSC_CONFIG}" -A https://api.opensuse.org mkpac "${OBS_PROJECT}/${OBS_PACKAGE}" 2>/dev/null || true
+          osc --config "${OSC_CONFIG}" -A https://api.opensuse.org checkout "${OBS_PROJECT}" "${OBS_PACKAGE}"
           cd "${OBS_PROJECT}/${OBS_PACKAGE}"
 
           rm -f nautilus-paste-shortcut-*.tar.gz
@@ -655,8 +660,8 @@ jobs:
           cp "${GITHUB_WORKSPACE}/packaging/opensuse/nautilus-paste-shortcut.spec" nautilus-paste-shortcut.spec
           sed -i "s/^Version:.*/Version:        ${VERSION}/" nautilus-paste-shortcut.spec
 
-          osc addremove
-          osc commit -m "Update to version ${VERSION}"
+          osc --config "${OSC_CONFIG}" addremove
+          osc --config "${OSC_CONFIG}" commit -m "Update to version ${VERSION}"
 
           echo "Submitted to OBS: ${OBS_PROJECT}/${OBS_PACKAGE}"
           echo "Monitor at: https://build.opensuse.org/package/show/${OBS_PROJECT}/${OBS_PACKAGE}"
@@ -669,7 +674,7 @@ jobs:
           echo "Source tarball: nautilus-paste-shortcut-${VERSION}.tar.gz"
           echo ""
           echo "To submit manually:"
-          echo "  osc -A https://build.opensuse.org checkout home:imz87:nautilus-paste-shortcut nautilus-paste-shortcut"
+          echo "  osc -A https://api.opensuse.org checkout home:imz87:nautilus-paste-shortcut nautilus-paste-shortcut"
           echo "  # copy files, then:"
           echo "  osc addremove && osc commit -m 'Update to ${VERSION}'"
           echo ""
@@ -678,7 +683,8 @@ jobs:
   publish-aur:
     name: Publish to AUR (Arch)
     needs: [prepare-release, create-tag, release]
-    if: needs.prepare-release.outputs.should_release == 'true' && needs.prepare-release.outputs.is_release_branch == 'true'
+    # Temporarily disabled until the AUR account/package is ready.
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -88,7 +88,7 @@ COPR packages can be built from the same spec file. To publish to COPR:
 | `COPR_API_TOKEN` | Full config block from `https://copr.fedorainfracloud.org/api/`, starting with `[copr-cli]` |
 | `OPENSUSE_OBS_USERNAME` | OBS username for openSUSE publishing |
 | `OPENSUSE_OBS_PASSWORD` | OBS password for openSUSE publishing |
-| `ARCH_AUR_SSH_KEY` | SSH private key for AUR (add public key at `https://aur.archlinux.org/account/ssh-keys`) |
+| `ARCH_AUR_SSH_KEY` | SSH private key for AUR (currently unused while AUR publishing is disabled) |
 
 **Manual COPR build:**
 
@@ -255,7 +255,7 @@ Native package repository publishing is separate work:
 - **Fedora/RHEL family**: COPR repository (implemented)
 - **Debian/Ubuntu family**: PPA or apt repository (implemented)
 - **openSUSE family**: OBS publishing (implemented)
-- **Arch family**: AUR package recipe (implemented)
+- **Arch family**: AUR package recipe (temporarily disabled until the AUR account/package is ready)
 
 Repository publishing requires package signing, credentials, and different automation than release artifact builds. The signing infrastructure established in this task enables future repository publishing.
 
