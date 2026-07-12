@@ -599,16 +599,16 @@ jobs:
 
       - name: Configure osc
         run: |
-          osc -A https://build.opensuse.org ls > /dev/null 2>&1 || true
-          mkdir -p "${HOME}/.osc"
-          cat > "${HOME}/.osc/oscrc" << EOF
+          mkdir -p "${HOME}/.config/osc"
+          cat > "${HOME}/.config/osc/oscrc" << OSCEOF
           [general]
           apiurl = https://build.opensuse.org
 
           [https://build.opensuse.org]
           user = _obs_TOKEN_
           pass = ${{ secrets.OPENSUSE_OBS_TOKEN }}
-          EOF
+          credentials_manager_class = osc.credentialsmgrmodule.CredentialsManager
+          OSCEOF
 
       - name: Create source tarball
         run: |
@@ -623,29 +623,44 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="${{ needs.prepare-release.outputs.version }}"
-          PACKAGE_DIR="${HOME}/obs-package"
-          mkdir -p "${PACKAGE_DIR}"
 
-          # Copy source tarball
-          cp nautilus-paste-shortcut-*.tar.gz "${PACKAGE_DIR}/"
+          # Ensure project exists
+          osc -A https://build.opensuse.org meta prj "${OBS_PROJECT}" > /dev/null 2>&1 || \
+          osc -A https://build.opensuse.org meta prj "${OBS_PROJECT}" -e << 'PROJEOF' || true
+          <project name="home:imz87:nautilus-paste-shortcut">
+            <title>Nautilus Paste Shortcut</title>
+            <description>A Nautilus extension for creating symlinks</description>
+            <repository name="openSUSE_Tumbleweed">
+              <path project="openSUSE:Factory" repository="standard"/>
+              <arch>x86_64</arch>
+            </repository>
+          </project>
+          PROJEOF
 
-          # Copy spec file
-          cp packaging/opensuse/nautilus-paste-shortcut.spec "${PACKAGE_DIR}/nautilus-paste-shortcut.spec"
-          sed -i "s/^Version:.*/Version:        ${VERSION}/" "${PACKAGE_DIR}/nautilus-paste-shortcut.spec"
-
-          # Create OBS package
-          cd "${PACKAGE_DIR}"
-          osc -A https://build.opensuse.org meta prj -e "${OBS_PROJECT}" || true
-          osc -A https://build.opensuse.org meta pkg "${OBS_PROJECT}" nautilus-paste-shortcut -e - << EOF
-          <package name="nautilus-paste-shortcut" project="${OBS_PROJECT}">
+          # Ensure package exists
+          osc -A https://build.opensuse.org meta pkg "${OBS_PROJECT}" nautilus-paste-shortcut > /dev/null 2>&1 || \
+          osc -A https://build.opensuse.org meta pkg "${OBS_PROJECT}" nautilus-paste-shortcut -e << 'PKGEOF' || true
+          <package name="nautilus-paste-shortcut" project="home:imz87:nautilus-paste-shortcut">
             <title>nautilus-paste-shortcut</title>
             <description>A Nautilus extension for creating symlinks</description>
           </package>
-          EOF
+          PKGEOF
 
-          # Import source files
+          # Create a temporary working directory
+          WORK_DIR="${HOME}/obs-work"
+          mkdir -p "${WORK_DIR}"
+
+          # Copy source tarball
+          cp "nautilus-paste-shortcut-${VERSION}.tar.gz" "${WORK_DIR}/"
+
+          # Copy and patch spec file
+          cp packaging/opensuse/nautilus-paste-shortcut.spec "${WORK_DIR}/nautilus-paste-shortcut.spec"
+          sed -i "s/^Version:.*/Version:        ${VERSION}/" "${WORK_DIR}/nautilus-paste-shortcut.spec"
+
+          # Import source files into OBS package
+          cd "${WORK_DIR}"
           osc -A https://build.opensuse.org importsrc "${OBS_PROJECT}" nautilus-paste-shortcut \
-              nautilus-paste-shortcut-${VERSION}.tar.gz \
+              "nautilus-paste-shortcut-${VERSION}.tar.gz" \
               nautilus-paste-shortcut.spec
 
           echo "Submitted to OBS: ${OBS_PROJECT}"
