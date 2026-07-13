@@ -115,9 +115,11 @@ cp packaging/nautilus-paste-shortcut.spec ~/rpmbuild/SPECS/
 rpmbuild -bs ~/rpmbuild/SPECS/nautilus-paste-shortcut.spec
 
 # Submit build to COPR
-copr-cli build --chroot fedora-rawhide-x86_64 --chroot fedora-44-x86_64 --chroot fedora-43-x86_64 imz87/nautilus-paste-shortcut \
+copr-cli build --chroot fedora-42-x86_64 --chroot fedora-43-x86_64 --chroot fedora-44-x86_64 --chroot fedora-rawhide-x86_64 imz87/nautilus-paste-shortcut \
     ~/rpmbuild/SRPMS/nautilus-paste-shortcut-*.src.rpm
 ```
+
+Make sure the COPR project has the matching Fedora chroots enabled, especially `fedora-42-x86_64` if you want `sudo dnf install nautilus-paste-shortcut` to work on Fedora 42.
 
 **Users can then install from COPR:**
 

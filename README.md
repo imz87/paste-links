@@ -145,6 +145,8 @@ sudo dnf copr enable imz87/nautilus-paste-shortcut
 sudo dnf install nautilus-paste-shortcut
 ```
 
+The COPR project must have a build for your Fedora release and architecture. For example, Fedora 42 users need the `fedora-42-x86_64` chroot enabled and built in COPR.
+
 This provides automatic updates through `dnf`. After installation, restart Nautilus:
 
 ```bash

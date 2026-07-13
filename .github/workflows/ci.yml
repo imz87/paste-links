@@ -855,6 +855,7 @@ jobs:
             --chroot fedora-rawhide-x86_64 \
             --chroot fedora-44-x86_64 \
             --chroot fedora-43-x86_64 \
+            --chroot fedora-42-x86_64 \
             "${COPR_OWNER}/${COPR_PROJECT}" \
             "${SRPM}"
           echo "Build submitted successfully!"
@@ -867,6 +868,6 @@ jobs:
           echo "SRPM built: ${SRPM}"
           echo ""
           echo "To submit manually:"
-          echo "  copr-cli build --chroot fedora-rawhide-x86_64 imz87/nautilus-paste-shortcut ${SRPM}"
+          echo "  copr-cli build --chroot fedora-42-x86_64 --chroot fedora-43-x86_64 --chroot fedora-44-x86_64 --chroot fedora-rawhide-x86_64 imz87/nautilus-paste-shortcut ${SRPM}"
           echo ""
           echo "Or re-run this workflow with dry_run=false"
