@@ -369,6 +369,7 @@ Your support helps with:
 - Maintaining and improving the extension
 - Packaging for more distributions
 - Writing better documentation
+- Test
 
 ## License
 
