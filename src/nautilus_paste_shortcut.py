@@ -19,8 +19,8 @@ from core_logic import (
 
 
 TARGET_MIME_TYPE = "x-special/gnome-copied-files"
-MENU_LABEL = "Paste Shortcut Here"
-DIALOG_TITLE = "Paste Shortcut Here"
+MENU_LABEL = "Paste Shortcut"
+DIALOG_TITLE = "Paste Shortcut"
 
 
 class PasteShortcutExtension(GObject.GObject, Nautilus.MenuProvider):

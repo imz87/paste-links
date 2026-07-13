@@ -1,7 +1,7 @@
 nautilus-paste-shortcut (0.1.0-1) unstable; urgency=low
 
   * Initial release.
-  * Add Paste Shortcut Here context menu action for GNOME Files.
+  * Add Paste Shortcut context menu action for GNOME Files.
   * Create symlinks from copied local files and folders.
   * Handle name collisions with -link suffixes.
 

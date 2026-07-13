@@ -9,8 +9,8 @@ Homepage: https://github.com/imz87/nautilus-paste-shortcut
 Package: nautilus-paste-shortcut
 Architecture: all
 Depends: ${python3:Depends}, ${misc:Depends}, python3-nautilus, gir1.2-nautilus-4.0, python3-gi, gir1.2-gtk-4.0
-Description: Add Paste Shortcut Here action to GNOME Files
- A Nautilus Python extension that adds a "Paste Shortcut Here" action to the
+Description: Add Paste Shortcut action to GNOME Files
+ A Nautilus Python extension that adds a "Paste Shortcut" action to the
  folder background context menu in GNOME Files. It creates symbolic links from
  files or folders currently copied in GNOME Files using the normal Ctrl+C flow.
  .

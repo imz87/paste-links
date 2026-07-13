@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/imz87/nautilus-paste-shortcut/actions/workflows/ci.yml/badge.svg)](https://github.com/imz87/nautilus-paste-shortcut/actions/workflows/ci.yml)
 
-Add a `Paste Shortcut Here` action to GNOME Files on Fedora and other Nautilus-based desktops.
+Add a `Paste Shortcut` action to GNOME Files on Fedora and other Nautilus-based desktops.
 
 The extension reads Nautilus's copied-files clipboard payload after a normal `Ctrl+C` and creates symbolic links in the folder you right-clicked.
 
@@ -104,7 +104,7 @@ The script installs the extension files into:
 nautilus -q
 ```
 
-Then reopen Files. The "Paste Shortcut Here" menu will appear in the context menu.
+Then reopen Files. The "Paste Shortcut" menu will appear in the context menu.
 
 ### RPM Install
 
@@ -138,7 +138,7 @@ The RPM installs the extension files to the system-wide path:
 nautilus -q
 ```
 
-Then reopen Files. The "Paste Shortcut Here" menu will appear in the context menu.
+Then reopen Files. The "Paste Shortcut" menu will appear in the context menu.
 
 ### COPR Install (Fedora)
 
@@ -155,7 +155,7 @@ This provides automatic updates through `dnf`. **Restart Nautilus / GNOME Files 
 nautilus -q
 ```
 
-Then reopen Files. The "Paste Shortcut Here" menu will appear in the context menu.
+Then reopen Files. The "Paste Shortcut" menu will appear in the context menu.
 
 **Uninstalling from COPR:**
 
@@ -217,7 +217,7 @@ After installation, **restart Nautilus / GNOME Files for the extension to take e
 ```bash
 nautilus -q
 ```
-Then reopen Files. The "Paste Shortcut Here" menu will appear in the context menu.
+Then reopen Files. The "Paste Shortcut" menu will appear in the context menu.
 
 **Important:** Release artifacts are not the same as adding an apt/dnf/pacman/zypper repository. They do not provide automatic updates. You must download and install new versions manually from GitHub Releases.
 
@@ -271,7 +271,7 @@ After installation, **restart Nautilus / GNOME Files for the extension to take e
 ```bash
 nautilus -q
 ```
-Then reopen Files. The "Paste Shortcut Here" menu will appear in the context menu.
+Then reopen Files. The "Paste Shortcut" menu will appear in the context menu.
 
 **Uninstalling from PPA:**
 
@@ -291,7 +291,7 @@ See `.docs/project/packaging.md` for details on PPA publishing and maintenance.
 2. Press `Ctrl+C`.
 3. Navigate to another local folder.
 4. Right-click empty space.
-5. Choose `Paste Shortcut Here` (only visible when the clipboard contains copied files).
+5. Choose `Paste Shortcut` (only visible when the clipboard contains copied files).
 
 If the clipboard does not contain copied local files, the menu item is hidden. An error dialog may still appear as a fallback if clipboard inspection fails.
 
@@ -343,7 +343,7 @@ The tests do **not** require a live GNOME session, Nautilus, or clipboard access
 
 ### Menu item does not appear
 
-If the extension files are installed but `Paste Shortcut Here` does not appear in the context menu:
+If the extension files are installed but `Paste Shortcut` does not appear in the context menu:
 
 1. **Check the loader is installed.** The `nautilus-python` package provides the shared library that lets Nautilus load Python extensions. Run:
    ```bash
