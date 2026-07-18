@@ -3,8 +3,6 @@
 Read these files before changing code:
 
 - `.docs/**/*.md`
-- `.opencode/**/*.md`
-- `.docs/tasks/**/*.md`
 
 Keep the docs updated when behavior, installation, or task workflow changes.
 

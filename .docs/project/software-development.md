@@ -21,6 +21,15 @@
 - Do not add background daemons, clipboard watchers, or unrelated desktop hooks.
 - Restrict behavior changes to GNOME Files integration only.
 
+## Python / Nautilus Focus Areas
+
+When working on the extension code, pay attention to:
+
+- **Nautilus menu-provider behavior**: understand when and how the context menu item appears.
+- **Clipboard parsing and validation**: validate clipboard content before acting on it.
+- **Local filesystem safety and deterministic naming**: avoid race conditions, handle existing names.
+- **GNOME Files integration**: keep the extension focused on Nautilus; do not broaden scope.
+
 ## Documentation
 
 - Update README and `.docs/` when behavior or installation changes.

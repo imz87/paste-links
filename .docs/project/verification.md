@@ -1,5 +1,19 @@
 # Verification
 
+## Choosing Checks
+
+Use this to choose checks for a change:
+
+| Change type | Default check |
+|---|---|
+| Python source change | `python3 -m py_compile src/nautilus_paste_shortcut.py` |
+| Install script change | `bash -n install.sh` |
+| Documentation-only change | Manual read-through of the updated instructions |
+
+Manual checks when needed:
+- GNOME Files clipboard behavior: follow the manual checks section below.
+- Packaging or install flow change: re-run the relevant install steps from `README.md`.
+
 ## Focused Checks
 
 Use these checks for normal changes:
