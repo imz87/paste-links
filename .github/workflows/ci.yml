@@ -861,6 +861,7 @@ jobs:
           set -euo pipefail
           echo "Submitting to COPR: ${COPR_OWNER}/${COPR_PROJECT}"
           copr-cli build \
+            --chroot fedora-42-x86_64 \
             --chroot fedora-rawhide-x86_64 \
             --chroot fedora-44-x86_64 \
             --chroot fedora-43-x86_64 \
