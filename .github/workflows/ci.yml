@@ -747,10 +747,12 @@ jobs:
 
           # Update .SRCINFO
           docker run --rm \
+            -e HOST_UID="$(id -u)" \
+            -e HOST_GID="$(id -g)" \
             -v "${AUR_DIR}:/build" \
             -w /build \
             archlinux:latest \
-            bash -lc "pacman -Sy --noconfirm base-devel && useradd -m builder && su - builder -c 'cd /build && makepkg --printsrcinfo' > .SRCINFO"
+            bash -lc 'pacman -Sy --noconfirm base-devel && groupadd -g "${HOST_GID}" builder && useradd -m -u "${HOST_UID}" -g "${HOST_GID}" builder && chown -R builder:builder /build && su builder -c "cd /build && makepkg --printsrcinfo > .SRCINFO"'
 
           # Commit and push
           git config user.name "github-actions[bot]"
