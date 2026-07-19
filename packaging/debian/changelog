@@ -1,7 +1,7 @@
 paste-links (0.1.0-1) unstable; urgency=low
 
   * Initial release.
-  * Add Paste Symlink Here context menu action for GNOME Files.
+  * Add Paste Symlink context menu action for GNOME Files.
   * Create symlinks from copied local files and folders.
   * Handle name collisions with -link suffixes.
 

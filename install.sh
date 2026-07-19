@@ -62,4 +62,4 @@ install -m 0644 "${script_dir}/src/core_logic.py" "${target_dir}/core_logic.py"
 printf 'Installed Nautilus extension to %s\n\n' "${target_dir}"
 printf 'Restart Nautilus / GNOME Files for the extension to take effect:\n\n'
 printf '  nautilus -q\n\n'
-printf 'Then reopen Files. The "Paste Shortcut" menu will appear in the context menu.\n'
+printf 'Then reopen Files. The "Paste Symlink" menu will appear in the context menu.\n'

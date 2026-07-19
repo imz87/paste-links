@@ -1,7 +1,7 @@
 Name:           paste-links
 Version:        0.1.3
 Release:        1%{?dist}
-Summary:        Add Paste Symlink Here action to GNOME Files
+Summary:        Add Paste Symlink action to GNOME Files
 License:        MIT
 URL:            https://github.com/imz87/paste-links
 Source0:        %{name}-%{version}.tar.gz
@@ -13,7 +13,7 @@ Requires:       python3-gobject
 Requires:       gtk4
 
 %description
-A Nautilus Python extension that adds a "Paste Symlink Here" action to the
+A Nautilus Python extension that adds a "Paste Symlink" action to the
 folder background context menu in GNOME Files. It creates symbolic links from
 files or folders currently copied in GNOME Files using the normal Ctrl+C flow.
 
@@ -45,12 +45,12 @@ echo "Restart Nautilus / GNOME Files for the extension to take effect:"
 echo ""
 echo "  nautilus -q"
 echo ""
-echo "Then reopen Files. The \"Paste Symlink Here\" menu will appear in the context menu."
+echo "Then reopen Files. The \"Paste Symlink\" menu will appear in the context menu."
 echo ""
 
 %changelog
 * Thu Jul 09 2026 Iman <iman@example.com> 0.1.0-1
 - Initial RPM release
-- Add Paste Symlink Here context menu action for GNOME Files
+- Add Paste Symlink context menu action for GNOME Files
 - Create symlinks from copied local files and folders
 - Handle name collisions with -link suffixes

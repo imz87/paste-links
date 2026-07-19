@@ -19,8 +19,8 @@ from core_logic import (
 
 
 TARGET_MIME_TYPE = "x-special/gnome-copied-files"
-MENU_LABEL = "Paste Symlink Here"
-DIALOG_TITLE = "Paste Symlink Here"
+MENU_LABEL = "Paste Symlink"
+DIALOG_TITLE = "Paste Symlink"
 
 
 class PasteLinksExtension(GObject.GObject, Nautilus.MenuProvider):

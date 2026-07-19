@@ -254,8 +254,8 @@ cat VERSION  # Should match PPA version
 
 ## Manual Checks
 
-1. Copy one file in GNOME Files and run `Paste Symlink Here` in another folder.
-2. Copy one folder in GNOME Files and run `Paste Symlink Here` in another folder.
+1. Copy one file in GNOME Files and run `Paste Symlink` in another folder.
+2. Copy one folder in GNOME Files and run `Paste Symlink` in another folder.
 3. Copy multiple items and verify one symlink is created per item.
 4. Repeat with an existing destination name and verify suffix handling.
 5. Press `Ctrl+X` and verify the menu item is hidden.

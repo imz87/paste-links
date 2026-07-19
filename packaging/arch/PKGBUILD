@@ -2,7 +2,7 @@
 pkgname=paste-links
 pkgver=0.1.21
 pkgrel=1
-pkgdesc="Add Paste Symlink Here action to GNOME Files"
+pkgdesc="Add Paste Symlink action to GNOME Files"
 arch=('any')
 url="https://github.com/imz87/paste-links"
 license=('MIT')
@@ -24,6 +24,6 @@ post_install() {
     echo ""
     echo "  nautilus -q"
     echo ""
-    echo "Then reopen Files. The \"Paste Symlink Here\" menu will appear in the context menu."
+    echo "Then reopen Files. The \"Paste Symlink\" menu will appear in the context menu."
     echo ""
 }
