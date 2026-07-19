@@ -758,8 +758,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add PKGBUILD .SRCINFO
-          git commit -m "Update to version ${VERSION}"
-          git push origin master
+
+          if git diff --cached --quiet; then
+            echo "AUR package is already up to date; nothing to commit."
+          else
+            git commit -m "Update to version ${VERSION}"
+            git push origin master
+          fi
 
           echo "Published to AUR: ${AUR_PACKAGE}"
           echo "Monitor at: https://aur.archlinux.org/${AUR_PACKAGE}"
