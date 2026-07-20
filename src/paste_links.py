@@ -24,6 +24,12 @@ DIALOG_TITLE = "Paste Symlink"
 
 
 class PasteLinksExtension(GObject.GObject, Nautilus.MenuProvider):
+    # Menu ordering: the Nautilus 4.0 Python extension API does not expose any
+    # mechanism for placing extension-provided items relative to built-in menu
+    # items. Items returned by get_background_items are appended after the
+    # built-in "Paste" action by Nautilus itself. There are no insertion-point,
+    # priority, or grouping hooks available through the public API.
+
     def get_background_items(self, current_folder):
         # Nautilus calls menu providers repeatedly, so keep this path
         # defensive and cheap: log unexpected failures and hide the item.
