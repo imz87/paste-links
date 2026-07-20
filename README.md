@@ -52,6 +52,8 @@ CI verifies Python syntax, shell script syntax, and pure unit tests in each cont
 
 This extension requires a Nautilus 4 desktop with GTK 4, PyGObject, and the **Nautilus Python extension loader** (`nautilus-python`). The loader is the package that tells Nautilus how to load `.py` files from the extensions directory. Without it, installed extension files are silently ignored.
 
+The extension supports Nautilus GI namespace versions 4.0 and 4.1. On systems where the nautilus-python loader pre-loads a newer namespace version (e.g. 4.1 on Fedora 43+), the extension handles this automatically. Verified on Fedora 42 (Nautilus 4.0) and Fedora 43+ (Nautilus 4.1).
+
 ### Fedora
 
 ```bash

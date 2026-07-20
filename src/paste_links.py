@@ -6,7 +6,16 @@ import traceback
 
 gi.require_version("Gdk", "4.0")
 gi.require_version("Gtk", "4.0")
-gi.require_version("Nautilus", "4.0")
+
+# The nautilus-python loader may already have the Nautilus namespace loaded at
+# a different version (e.g. 4.1 on newer Fedora) before this extension runs.
+# When that happens, require_version("Nautilus", "4.0") raises ValueError.
+# Tolerate that case so the extension still loads — the API is compatible.
+try:
+    gi.require_version("Nautilus", "4.0")
+except ValueError as exc:
+    if "already loaded" not in str(exc) and "already requires" not in str(exc):
+        raise
 
 from gi.repository import Gdk, GLib, GObject, Gtk, Nautilus
 
