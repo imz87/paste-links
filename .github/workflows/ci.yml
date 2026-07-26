@@ -454,18 +454,75 @@ jobs:
       - name: List signed artifacts
         run: find artifacts -type f | sort
 
+      - name: Create release body
+        run: |
+          cat > release-body.md <<'EOF'
+          ## Install
+
+          Download the package for your distro from the assets below, then run:
+
+          ### Fedora / RHEL
+
+          ```bash
+          sudo dnf install ./paste-links-*.rpm
+          nautilus -q
+          ```
+
+          ### Ubuntu / Debian
+
+          ```bash
+          sudo apt install ./paste-links_*.deb
+          nautilus -q
+          ```
+
+          ### Arch Linux / Manjaro
+
+          ```bash
+          sudo pacman -U paste-links-*.pkg.tar.zst
+          nautilus -q
+          ```
+
+          ### openSUSE
+
+          ```bash
+          sudo zypper install ./paste-links-*.rpm
+          nautilus -q
+          ```
+
+          ## Fedora COPR
+
+          Fedora users can also install from COPR:
+
+          ```bash
+          sudo dnf copr enable imz87/paste-links
+          sudo dnf install paste-links
+          nautilus -q
+          ```
+
+          ## After installing
+
+          Restart GNOME Files / Nautilus:
+
+          ```bash
+          nautilus -q
+          ```
+
+          Then reopen Files and right-click a folder. You should see **Paste Symlink**.
+          EOF
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.prepare-release.outputs.version }}
           target_commitish: ${{ github.sha }}
+          body_path: release-body.md
           files: |
             artifacts/source-tarball/*
             artifacts/rpm-fedora/*
             artifacts/rpm-opensuse/*
             artifacts/deb-ubuntu/*
             artifacts/pkg-arch/*
-          generate_release_notes: true
+          generate_release_notes: false
 
   publish-ppa:
     name: Publish to PPA
