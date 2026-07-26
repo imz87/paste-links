@@ -6,6 +6,12 @@ Add a `Paste Symlink` action to GNOME Files on Fedora and other Nautilus-based d
 
 The extension reads Nautilus's copied-files clipboard payload after a normal `Ctrl+C` and creates symbolic links in the folder you right-clicked.
 
+## Demo
+
+Copy a file normally, then right-click a target folder and choose **Paste Symlink**.
+
+![Paste Links demo](docs/demo/paste-links-demo.gif)
+
 ### Quick Links
 
 - [Latest Release](https://github.com/imz87/paste-links/releases/latest)
