@@ -265,4 +265,4 @@ cat VERSION  # Should match PPA version
 
 - Review is a separate manual phase after development.
 - For clipboard or Nautilus API changes, prefer a real desktop test over assumptions.
-- Container CI covers dependency installation, Python compilation, shell syntax, and pure logic tests. Desktop integration (context menu, clipboard, error dialogs) still requires manual verification.
+- Container CI covers dependency installation, Python compilation, shell syntax, and pure logic tests. The Ubuntu and Debian jobs also run the local installer with a temporary home directory to check that it finds the packaged loader and copies both extension files. Desktop integration (context menu, clipboard, error dialogs) still requires manual verification.

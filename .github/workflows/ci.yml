@@ -86,6 +86,15 @@ jobs:
       - name: Shell syntax check
         run: bash -n install.sh
 
+      - name: Smoke-test local installation (Ubuntu/Debian)
+        if: startsWith(matrix.image, 'ubuntu') || startsWith(matrix.image, 'debian')
+        run: |
+          HOME="$(mktemp -d)"
+          export HOME
+          bash install.sh
+          test -f "$HOME/.local/share/nautilus-python/extensions/paste_links.py"
+          test -f "$HOME/.local/share/nautilus-python/extensions/core_logic.py"
+
       - name: Check Nautilus typelib availability
         id: typelib
         run: |

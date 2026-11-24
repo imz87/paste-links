@@ -54,6 +54,8 @@ loader_found=0
 loader_dirs=(
     "/usr/lib64/nautilus/extensions-4"
     "/usr/lib/nautilus/extensions-4"
+    # Ubuntu and Debian use architecture-specific library directories.
+    /usr/lib/*-linux-gnu*/nautilus/extensions-4
     "/usr/lib64/nautilus/extensions-3"
     "/usr/lib/nautilus/extensions-3"
 )
