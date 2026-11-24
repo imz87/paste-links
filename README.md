@@ -72,7 +72,7 @@ sudo dnf install nautilus-python python3-gobject gtk4
 sudo apt install python3-nautilus gir1.2-nautilus-4.0 python3-gi gir1.2-gtk-4.0
 ```
 
-Package names may vary by Ubuntu/Debian release. Check that `libnautilus-python.so` is available on your system.
+`python3-nautilus` provides `libnautilus-python.so`. The installer checks the architecture-specific library directories used by Ubuntu and Debian, such as `/usr/lib/x86_64-linux-gnu/nautilus/extensions-4`.
 
 ### Arch Linux / Manjaro
 
