@@ -273,7 +273,7 @@ Native package repository publishing is separate work:
 - **openSUSE family**: OBS publishing (implemented)
 - **Arch family**: AUR package recipe (temporarily disabled until the AUR account/package is ready)
 
-Repository publishing requires package signing, credentials, and different automation than release artifact builds. The signing infrastructure established in this task enables future repository publishing.
+Repository publishing requires package signing, credentials, and different automation than release artifact builds. The signing infrastructure established in this work enables future repository publishing.
 
 ## PPA/apt Repository Publishing
 

@@ -33,4 +33,4 @@ When working on the extension code, pay attention to:
 ## Documentation
 
 - Update README and `.docs/` when behavior or installation changes.
-- Keep task specs small, explicit, and easy to review.
+- Keep implementation specifications small, explicit, and easy to review.
