@@ -275,6 +275,10 @@ Native package repository publishing is separate work:
 
 Repository publishing requires package signing, credentials, and different automation than release artifact builds. The signing infrastructure established in this work enables future repository publishing.
 
+### openSUSE OBS Connection Check
+
+The `Publish to OBS (openSUSE)` job lists the OBS project before submitting sources. This is separate from `Build RPM (openSUSE)`. To check the installed client version when debugging, use `osc version`; some versions reject `osc --version` before making any API request.
+
 ## PPA/apt Repository Publishing
 
 The first native repository target is PPA for Debian/Ubuntu-family distribution. This provides automatic updates through `apt` rather than manual downloads from GitHub Releases.

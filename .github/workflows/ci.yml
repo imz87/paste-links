@@ -694,9 +694,6 @@ jobs:
       - name: Test OBS connection
         if: github.event_name != 'workflow_dispatch' || inputs.dry_run != 'true'
         run: |
-          osc --version
-          echo "HOME=${HOME}"
-          ls -la "${OSC_CONFIG}"
           osc --config "${OSC_CONFIG}" -A https://api.opensuse.org ls home:imz87:paste-links || {
             echo "::error::OBS authentication failed."
             echo "Check that OPENSUSE_OBS_USERNAME and OPENSUSE_OBS_PASSWORD are correct."
